@@ -1,0 +1,12 @@
+services:
+    kinerity.postcountrequirements.listener:
+        class: kinerity\postcountrequirements\event\listener
+        arguments:
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: event.listener }
