@@ -23,9 +23,6 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\controller\helper */
-	protected $helper;
-
 	/** @var \phpbb\language\language */
 	protected $lang;
 
@@ -42,16 +39,14 @@ class listener implements EventSubscriberInterface
 	 * Constructor
 	 *
 	 * @param \phpbb\db\driver\driver_interface  $db         Database object
-	 * @param \phpbb\controller\helper           $helper     Helper object
 	 * @param \phpbb\language\language           $lang       Language object
 	 * @param \phpbb\request\request             $request    Request object
 	 * @param \phpbb\template\template           $template   Template object
 	 * @param \phpbb\user                        $user       User object
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\language\language $lang, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\language\language $lang, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$this->db = $db;
-		$this->helper = $helper;
 		$this->lang = $lang;
 		$this->request = $request;
 		$this->template = $template;
@@ -134,23 +129,16 @@ class listener implements EventSubscriberInterface
 	{
 		$forum_id = $event['forum_id'];
 
-		$group_bypass = false;
-
-		$sql = 'SELECT g.group_bypass_postcount
+		$sql = 'SELECT COUNT(g.group_bypass_postcount) as group_bypass
 			FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
-			WHERE user_id = ' . $this->user->data['user_id'] . '
-				AND ug.group_id = g.group_id';
+			WHERE g.group_bypass_postcount = true
+				AND ug.group_id = g.group_id
+				AND ug.user_id = ' . (int) $this->user->data['user_id'];
 		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			if ($row['group_bypass_postcount'] == 1)
-			{
-				$group_bypass = true;
-			}
-		}
+		$group_bypass = (int) $this->db->sql_fetchfield('group_bypass');
 		$this->db->sql_freeresult($result);
 
-		if ($group_bypass == false)
+		if (!$group_bypass)
 		{
 			$sql = 'SELECT forum_postcount_post
 				FROM ' . FORUMS_TABLE . '
@@ -161,7 +149,8 @@ class listener implements EventSubscriberInterface
 
 			if ((int) $this->user->data['user_posts'] < (int) $forum_data['forum_postcount_post'])
 			{
-				$this->helper->message('POSTCOUNT_NO_POST', array($forum_data['forum_postcount_post']));
+				$this->lang->add_lang('common', 'kinerity/postcountrequirements');
+				trigger_error($this->lang->lang('POSTCOUNT_NO_POST', $forum_data['forum_postcount_post']));
 			}
 		}
 	}
@@ -180,23 +169,16 @@ class listener implements EventSubscriberInterface
 	{
 		$forum_id = $event['forum_id'];
 
-		$group_bypass = false;
-
-		$sql = 'SELECT g.group_bypass_postcount
+		$sql = 'SELECT COUNT(g.group_bypass_postcount) as group_bypass
 			FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
-			WHERE user_id = ' . $this->user->data['user_id'] . '
-				AND ug.group_id = g.group_id';
+			WHERE g.group_bypass_postcount = true
+				AND ug.group_id = g.group_id
+				AND ug.user_id = ' . (int) $this->user->data['user_id'];
 		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			if ($row['group_bypass_postcount'] == 1)
-			{
-				$group_bypass = true;
-			}
-		}
+		$group_bypass = (int) $this->db->sql_fetchfield('group_bypass');
 		$this->db->sql_freeresult($result);
 
-		if ($group_bypass == false)
+		if (!$group_bypass)
 		{
 			$sql = 'SELECT forum_postcount_view
 				FROM ' . FORUMS_TABLE . '
@@ -207,7 +189,7 @@ class listener implements EventSubscriberInterface
 
 			if ((int) $this->user->data['user_posts'] < (int) $forum_data['forum_postcount_view'])
 			{
-				$this->helper->message('POSTCOUNT_NO_VIEW', array((int) $forum_data['forum_postcount_view']));
+				trigger_error($this->lang->lang('POSTCOUNT_NO_VIEW', $forum_data['forum_postcount_view']));
 			}
 		}
 	}
