@@ -47,11 +47,11 @@ $lang = array_merge($lang, array(
 	'GROUP_BYPASS_POSTCOUNT_EXPLAIN'	=> 'This group and it’s members can view and post in forums even if they do not have the required post count.',
 
 	'POSTCOUNT_NO_POST'	=> array(
-		1	=> 'You do not have the required post count to post in this forum. In order to post in this forum, you must have %d post.',
-		2	=> 'You do not have the required post count to post in this forum. In order to post in this forum, you must have %d posts.',
+		1	=> 'You do not have the required post count to post in this forum. In order to post in this forum, you must have %1$d post. You need %2$d more post.',
+		2	=> 'You do not have the required post count to post in this forum. In order to post in this forum, you must have %1$d posts. You need %2$d more posts.',
 	),
 	'POSTCOUNT_NO_VIEW'	=> array(
-		1	=> 'You do not have the required post count to view this forum. In order to view this forum, you must have %d post.',
-		2	=> 'You do not have the required post count to view this forum. In order to view this forum, you must have %d posts.',
+		1	=> 'You do not have the required post count to view this forum. In order to view this forum, you must have %1$d post. You need %2$d more post.',
+		2	=> 'You do not have the required post count to view this forum. In order to view this forum, you must have %1$d posts. You need %2$d more posts.',
 	),
 ));

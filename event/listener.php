@@ -131,14 +131,7 @@ class listener implements EventSubscriberInterface
 	{
 		$forum_id = $event['forum_id'];
 
-		$sql = 'SELECT COUNT(g.group_bypass_postcount) as group_bypass
-			FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
-			WHERE g.group_bypass_postcount = true
-				AND ug.group_id = g.group_id
-				AND ug.user_id = ' . (int) $this->user->data['user_id'];
-		$result = $this->db->sql_query($sql);
-		$group_bypass = (int) $this->db->sql_fetchfield('group_bypass');
-		$this->db->sql_freeresult($result);
+		$group_bypass = $this->query_bypass_groups();
 
 		if (!$group_bypass)
 		{
@@ -151,8 +144,9 @@ class listener implements EventSubscriberInterface
 
 			if ((int) $this->user->data['user_posts'] < (int) $forum_data['forum_postcount_post'])
 			{
+				$need_posts = (int) $forum_data['forum_postcount_post'] - (int) $this->user->data['user_posts'];
 				$this->lang->add_lang('common', 'kinerity/postcountrequirements');
-				trigger_error($this->lang->lang('POSTCOUNT_NO_POST', $forum_data['forum_postcount_post']));
+				trigger_error($this->lang->lang('POSTCOUNT_NO_POST', (int) $forum_data['forum_postcount_post'], (int) $need_posts));
 			}
 		}
 	}
@@ -161,14 +155,7 @@ class listener implements EventSubscriberInterface
 	{
 		$ex_fid_ary = $event['ex_fid_ary'];
 
-		$sql = 'SELECT COUNT(g.group_bypass_postcount) as group_bypass
-			FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
-			WHERE g.group_bypass_postcount = true
-				AND ug.group_id = g.group_id
-				AND ug.user_id = ' . (int) $this->user->data['user_id'];
-		$result = $this->db->sql_query($sql);
-		$group_bypass = (int) $this->db->sql_fetchfield('group_bypass');
-		$this->db->sql_freeresult($result);
+		$group_bypass = $this->query_bypass_groups();
 
 		if (!$group_bypass)
 		{
@@ -200,14 +187,7 @@ class listener implements EventSubscriberInterface
 	{
 		$forum_id = $event['forum_id'];
 
-		$sql = 'SELECT COUNT(g.group_bypass_postcount) as group_bypass
-			FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
-			WHERE g.group_bypass_postcount = true
-				AND ug.group_id = g.group_id
-				AND ug.user_id = ' . (int) $this->user->data['user_id'];
-		$result = $this->db->sql_query($sql);
-		$group_bypass = (int) $this->db->sql_fetchfield('group_bypass');
-		$this->db->sql_freeresult($result);
+		$group_bypass = $this->query_bypass_groups();
 
 		if (!$group_bypass)
 		{
@@ -220,8 +200,23 @@ class listener implements EventSubscriberInterface
 
 			if ((int) $this->user->data['user_posts'] < (int) $forum_data['forum_postcount_view'])
 			{
-				trigger_error($this->lang->lang('POSTCOUNT_NO_VIEW', $forum_data['forum_postcount_view']));
+				$need_posts = (int) $forum_data['forum_postcount_view'] - (int) $this->user->data['user_posts'];
+				trigger_error($this->lang->lang('POSTCOUNT_NO_VIEW', (int) $forum_data['forum_postcount_view'], (int) $need_posts));
 			}
 		}
+	}
+
+	private function query_bypass_groups()
+	{
+		$sql = 'SELECT COUNT(g.group_bypass_postcount) as group_bypass
+			FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
+			WHERE g.group_bypass_postcount = true
+				AND ug.group_id = g.group_id
+				AND ug.user_id = ' . (int) $this->user->data['user_id'];
+		$result = $this->db->sql_query($sql);
+		$group_bypass = (int) $this->db->sql_fetchfield('group_bypass');
+		$this->db->sql_freeresult($result);
+
+		return $group_bypass;
 	}
 }
