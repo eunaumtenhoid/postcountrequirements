@@ -66,6 +66,8 @@ class listener implements EventSubscriberInterface
 
 			'core.modify_posting_parameters'	=> 'modify_posting_parameters',
 
+			'core.search_modify_param_before'	=> 'search_modify_param_before',
+
 			'core.user_setup'	=> 'user_setup',
 
 			'core.viewforum_get_topic_data'	=> 'viewforum_viewtopic_get_data',
@@ -153,6 +155,35 @@ class listener implements EventSubscriberInterface
 				trigger_error($this->lang->lang('POSTCOUNT_NO_POST', $forum_data['forum_postcount_post']));
 			}
 		}
+	}
+
+	public function search_modify_param_before($event)
+	{
+		$ex_fid_ary = $event['ex_fid_ary'];
+
+		$sql = 'SELECT COUNT(g.group_bypass_postcount) as group_bypass
+			FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
+			WHERE g.group_bypass_postcount = true
+				AND ug.group_id = g.group_id
+				AND ug.user_id = ' . (int) $this->user->data['user_id'];
+		$result = $this->db->sql_query($sql);
+		$group_bypass = (int) $this->db->sql_fetchfield('group_bypass');
+		$this->db->sql_freeresult($result);
+
+		if (!$group_bypass)
+		{
+			$sql = 'SELECT forum_postcount_view, forum_id
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_postcount_view > ' . (int) $this->user->data['user_posts'];
+			$result = $this->db->sql_query($sql);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$ex_fid_ary[] = $row['forum_id'];
+			}
+			$this->db->sql_freeresult($result);
+		}
+
+		$event['ex_fid_ary'] = $ex_fid_ary;
 	}
 
 	public function user_setup($event)
