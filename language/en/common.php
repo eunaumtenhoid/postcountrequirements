@@ -44,7 +44,7 @@ $lang = array_merge($lang, array(
 	'FORUM_POSTCOUNT_VIEW_EXPLAIN'	=> 'Number of posts required to view this forum. Setting this value to 0 disables this requirement.',
 
 	'GROUP_BYPASS_POSTCOUNT'			=> 'Bypass Post Count Requirements',
-	'GROUP_BYPASS_POSTCOUNT_EXPLAIN'	=> 'This group and it’s members can access forums even if they do not have the required post count.',
+	'GROUP_BYPASS_POSTCOUNT_EXPLAIN'	=> 'This group and it’s members can view and post in forums even if they do not have the required post count.',
 
 	'POSTCOUNT_NO_POST'	=> array(
 		1	=> 'You do not have the required post count to post in this forum. In order to post in this forum, you must have %d post.',
