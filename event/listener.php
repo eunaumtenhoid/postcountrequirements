@@ -146,7 +146,7 @@ class listener implements EventSubscriberInterface
 			{
 				$need_posts = (int) $forum_data['forum_postcount_post'] - (int) $this->user->data['user_posts'];
 				$this->lang->add_lang('common', 'kinerity/postcountrequirements');
-				trigger_error($this->lang->lang('POSTCOUNT_NO_POST', (int) $forum_data['forum_postcount_post'], (int) $need_posts));
+				trigger_error($this->lang->lang('POSTCOUNT_NO_POST', (int) $forum_data['forum_postcount_post']) . ' ' . $this->lang->lang('NEED_POSTS', (int) $need_posts));
 			}
 		}
 	}
@@ -201,7 +201,7 @@ class listener implements EventSubscriberInterface
 			if ((int) $this->user->data['user_posts'] < (int) $forum_data['forum_postcount_view'])
 			{
 				$need_posts = (int) $forum_data['forum_postcount_view'] - (int) $this->user->data['user_posts'];
-				trigger_error($this->lang->lang('POSTCOUNT_NO_VIEW', (int) $forum_data['forum_postcount_view'], (int) $need_posts));
+				trigger_error($this->lang->lang('POSTCOUNT_NO_VIEW', (int) $forum_data['forum_postcount_view']) . ' ' . $this->lang->lang('NEED_POSTS', (int) $need_posts));
 			}
 		}
 	}
