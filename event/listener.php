@@ -210,7 +210,7 @@ class listener implements EventSubscriberInterface
 	{
 		$sql = 'SELECT COUNT(g.group_bypass_postcount) as group_bypass
 			FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
-			WHERE g.group_bypass_postcount = true
+			WHERE g.group_bypass_postcount = 1
 				AND ug.group_id = g.group_id
 				AND ug.user_id = ' . (int) $this->user->data['user_id'];
 		$result = $this->db->sql_query($sql);
